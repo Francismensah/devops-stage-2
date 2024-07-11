@@ -1,25 +1,25 @@
-# Use the latest official Python image as a base
-FROM python:latest
+# Official Python runtime as a parent image
+FROM python:3.10
 
-# Install Node.js and npm
-RUN apt-get update && apt-get install -y \
-    nodejs \
-    npm
+RUN set -xe
 
-# Install Poetry using pip
-RUN pip install poetry
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 - --git https://github.com/python-poetry/poetry.git@master
 
-# Set the working directory
+ENV PATH="/root/.local/bin:$PATH"
+
+# Confirm poetry version
+RUN poetry --version
+
+# Set up the working directory
 WORKDIR /app
 
-# Copy the application files
-COPY . .
+# Copy and install dependencies
+COPY . /app
 
-# Install dependencies using Poetry
 RUN poetry install
 
-# Expose the port FastAPI runs on
 EXPOSE 8000
 
-# Run the prestart script and start the server
-CMD ["sh", "-c", "poetry run bash ./prestart.sh && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+# Start the application
+CMD ["bash", "-c", "poetry run bash ./prestart.sh && poetry run uvicorn app.main:app --reload --host 0.0.0.0"]

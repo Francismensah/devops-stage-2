@@ -1,17 +1,15 @@
-# Use the latest official Node.js image as a base
-FROM node:latest
+# Official Node.js runtime as a parent image
+FROM node:20.15.0-alpine
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the application files
-COPY . .
-
-# Install dependencies
+# Copy the rest of the application code
+COPY . /app
 RUN npm install
 
-# Expose the port the development server runs on
+
+# Make port 80 available to the world outside this container
 EXPOSE 5173
 
-# Run the development server
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD [ "npm", "run", "dev", "--", "--host" ]
